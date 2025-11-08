@@ -57,7 +57,7 @@ cd Scripts~
 python3 build-thorvg.py
 ```
 
-Afterwards, copy the [Plugins](Plugins) folder
+The built libraries will then be copied to the [Plugins](Plugins) folder
 
 ## Communication
 
