@@ -57,8 +57,6 @@ cd scripts
 python3 build-thorvg.py
 ```
 
-The built libraries will then be copied to the [Plugins](Plugins) folder
-
 ## Communication
 
 For real-time conversations and discussions, please join us on [Discord](https://discord.gg/n25xj6J6HM)
