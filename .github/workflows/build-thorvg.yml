@@ -108,7 +108,7 @@ jobs:
         run: pip3 install meson
 
       - name: Cache Emsdk
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: emsdk-cache
           key: emsdk-4.0.0
