@@ -91,7 +91,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wasm-binary
-          path: StreamingAssets/WebGL/
+          path: package/StreamingAssets/WebGL/
 
   create-branch:
     needs: [build-macos, build-windows, build-linux]
@@ -129,7 +129,7 @@ jobs:
 
           # WASM
           mkdir -p StreamingAssets/WebGL
-          cp -r artifacts/wasm-binary/* StreamingAssets/WebGL/
+          cp -r artifacts/wasm-binary/* package/StreamingAssets/WebGL/
 
       - name: Create branch and commit
         run: |
