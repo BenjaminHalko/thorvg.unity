@@ -158,7 +158,7 @@ jobs:
       - name: Copy binaries to package
         run: |
           cp artifacts/macos-binary/libthorvg.dylib package/Plugins/macOS/
-          cp artifacts/ios-binary/libthorvg.a package/Plugins/arm64/
+          cp artifacts/ios-binary/libthorvg.a package/Plugins/iOS/arm64/
           cp artifacts/windows-binary/libthorvg.dll package/Plugins/x86_64/
           cp artifacts/linux-binary/libthorvg.so package/Plugins/x86_64/
           cp -r artifacts/android-binary/* package/Plugins/Android/
