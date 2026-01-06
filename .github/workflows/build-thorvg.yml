@@ -21,15 +21,23 @@ jobs:
         working-directory: scripts
         run: python3 build-thorvg.py ${{ inputs.thorvg_tag }} desktop
 
-      - name: Build iOS
-        working-directory: scripts
-        run: python3 build-thorvg.py ${{ inputs.thorvg_tag }} ios
-
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-binary
           path: package/Plugins/macOS/
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: brew install meson
+
+      - name: Build iOS
+        working-directory: scripts
+        run: python3 build-thorvg.py ${{ inputs.thorvg_tag }} ios
 
       - name: Upload iOS artifact
         uses: actions/upload-artifact@v4
@@ -67,25 +75,47 @@ jobs:
         working-directory: scripts
         run: python3 build-thorvg.py ${{ inputs.thorvg_tag }} desktop
 
-      - name: Build Android
-        working-directory: scripts
-        run: python3 build-thorvg.py ${{ inputs.thorvg_tag }} android
-
-      - name: Build WASM
-        working-directory: scripts
-        run: python3 build-thorvg.py ${{ inputs.thorvg_tag }} wasm
-
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-binary
           path: package/Plugins/x86_64/libthorvg.so
 
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip3 install meson
+
+      - name: Build Android
+        working-directory: scripts
+        run: python3 build-thorvg.py ${{ inputs.thorvg_tag }} android
+
       - name: Upload Android artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-binary
           path: package/Plugins/Android/
+
+  build-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip3 install meson
+
+      - name: Cache emsdk
+        uses: actions/cache@v4
+        with:
+          path: scripts/emsdk
+          key: emsdk-4.0.0
+
+      - name: Build WASM
+        working-directory: scripts
+        run: python3 build-thorvg.py ${{ inputs.thorvg_tag }} wasm
 
       - name: Upload WASM artifact
         uses: actions/upload-artifact@v4
@@ -94,7 +124,15 @@ jobs:
           path: package/StreamingAssets/WebGL/
 
   create-branch:
-    needs: [build-macos, build-windows, build-linux]
+    needs:
+      [
+        build-macos,
+        build-ios,
+        build-windows,
+        build-linux,
+        build-android,
+        build-wasm,
+      ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -128,7 +166,7 @@ jobs:
           cp -r artifacts/android-binary/* package/Plugins/Android/
 
           # WASM
-          mkdir -p StreamingAssets/WebGL
+          mkdir -p package/StreamingAssets/WebGL
           cp -r artifacts/wasm-binary/* package/StreamingAssets/WebGL/
 
       - name: Create branch and commit
@@ -136,11 +174,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          BRANCH_NAME="thorvg-${{ inputs.thorvg_tag }}"
+          TAG="${{ inputs.thorvg_tag }}"
+          BRANCH_NAME="thorvg-$TAG"
           git checkout -b "$BRANCH_NAME"
 
-          git add package/Plugins/ StreamingAssets/
-          git commit -m "Update ThorVG binaries to ${{ inputs.thorvg_tag }}"
+          git add package/
+          git commit -m "Update ThorVG binaries to $TAG"
 
           git push origin "$BRANCH_NAME"
 
