@@ -498,6 +498,7 @@ def build_wasm():
                 str(build_dir),
                 str(THORVG_DIR),
                 f"--cross-file={cross_file}",
+                "-Ddefault_library=static",
             ]
             + wasm_commands
             + ["--wipe"],
