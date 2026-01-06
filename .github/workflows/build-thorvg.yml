@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-binary
-          path: package/Plugins/macOS/
+          path: package/Plugins/macOS/libthorvg.dylib
 
   build-ios:
     runs-on: macos-latest
@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-binary
-          path: package/Plugins/iOS/
+          path: package/Plugins/arm64/libthorvg.a
 
   build-windows:
     runs-on: windows-latest
@@ -97,7 +97,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-binary
-          path: package/Plugins/Android/
+          path: |
+            package/Plugins/Android/
+            !package/Plugins/Android/*.meta
+            !package/Plugins/Android/**/*.meta
 
   build-wasm:
     runs-on: ubuntu-latest
@@ -127,7 +130,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wasm-binary
-          path: package/StreamingAssets/WebGL/
+          path: |
+            package/StreamingAssets/WebGL/
+            !package/StreamingAssets/WebGL/*.meta
 
   create-branch:
     needs:
@@ -148,32 +153,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
-
-      - name: Copy binaries to package
-        run: |
-          # macOS
-          mkdir -p package/Plugins/macOS
-          cp -r artifacts/macos-binary/* package/Plugins/macOS/
-
-          # iOS
-          mkdir -p package/Plugins/iOS
-          cp -r artifacts/ios-binary/* package/Plugins/iOS/
-
-          # Windows
-          mkdir -p package/Plugins/x86_64
-          cp artifacts/windows-binary/libthorvg.dll package/Plugins/x86_64/
-
-          # Linux
-          cp artifacts/linux-binary/libthorvg.so package/Plugins/x86_64/
-
-          # Android
-          mkdir -p package/Plugins/Android
-          cp -r artifacts/android-binary/* package/Plugins/Android/
-
-          # WASM
-          mkdir -p package/StreamingAssets/WebGL
-          cp -r artifacts/wasm-binary/* package/StreamingAssets/WebGL/
+          merge-multiple: true
 
       - name: Create branch and commit
         run: |
