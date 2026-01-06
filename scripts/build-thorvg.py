@@ -41,7 +41,7 @@ COMMON_OPTIONS = [
     "-Dfile=false",
     "-Dpartial=false",
     "-Dextra=",
-    "-Dstatic",
+    "-Dstatic=true",
     "-Dbuildtype=release",
 ]
 
@@ -243,46 +243,6 @@ endian = 'little'
     return cross_file
 
 
-def process_dylib(source):
-    """Code sign the dylib"""
-
-    print("Code signing macOS library...")
-
-    # Check for Developer ID certificate
-    signing_identity = "-"  # Default: ad-hoc signature
-    try:
-        result = subprocess.run(
-            ["security", "find-identity", "-v", "-p", "codesigning"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-
-        # Look for Developer ID Application certificate
-        for line in result.stdout.split("\n"):
-            if "Developer ID Application" in line:
-                # Extract identity (between quotes or after ")")
-                parts = line.split('"')
-                if len(parts) >= 2:
-                    signing_identity = parts[1]
-                    break
-    except Exception:
-        pass
-
-    # Sign the library
-    try:
-        if signing_identity == "-":
-            print("Using ad-hoc signature")
-        subprocess.run(
-            ["codesign", "--force", "--sign", signing_identity, str(source)],
-            check=True,
-            capture_output=True,
-        )
-        print("[OK] Code signed successfully")
-    except subprocess.CalledProcessError as e:
-        print(f"[WARN] Code signing failed: {e}")
-
-
 def build_desktop():
     """Build for current desktop platform (macOS, Windows, Linux)"""
     print("\n=== Building for Desktop ===")
@@ -306,9 +266,6 @@ def build_desktop():
         output_dir = UNITY_PLUGINS / "macOS"
         output_file = "libthorvg.dylib"
         source = build_dir / "src" / output_file
-
-        process_dylib(source)
-
     elif system == "Windows":
         # Windows
         output_dir = UNITY_PLUGINS / "x86_64"
