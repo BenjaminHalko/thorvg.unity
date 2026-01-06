@@ -1,4 +1,26 @@
-﻿using System;
+/*
+ * Copyright (c) 2025 - 2026 ThorVG project. All rights reserved.
+
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -13,11 +35,11 @@ namespace Tvg
         [SerializeField]
         [Tooltip("Drag and drop a Lottie .json file here")]
         private TextAsset source;
-        
+
         [SerializeField]
         [Tooltip("Starting frame of the animation")]
         private float _frame = 0.0f;
-        
+
         [SerializeField]
         [Tooltip("Animation playback speed multiplier")]
         private float _speed = 1.0f;
@@ -52,7 +74,7 @@ namespace Tvg
             // Wait for ThorVG to be ready (important for WebGL)
             StartCoroutine(InitializeWhenReady());
         }
-        
+
         private IEnumerator InitializeWhenReady()
         {
             // Wait for ThorVG module to load (WebGL only, instant on native)
@@ -60,7 +82,7 @@ namespace Tvg
             {
                 yield return null;
             }
-            
+
             // Now safe to load content
             LoadSource();
         }
@@ -87,7 +109,7 @@ namespace Tvg
         {
             // Clean up before loading
             Cleanup();
-            
+
             __loaded = false;
             __needsReload = false;
 
@@ -104,7 +126,7 @@ namespace Tvg
 
             // Get the text data from the source
             string dataString = source.text;
-            
+
             if (string.IsNullOrEmpty(dataString))
             {
                 if (__material != null)
@@ -118,10 +140,10 @@ namespace Tvg
                 __texture = new TvgTexture(dataString);
                 __isAnimated = __texture.totalFrames > 1;
                 __texture.frame = _frame;
-                
+
                 // Create mesh and material
                 SetupMeshAndMaterial();
-                
+
                 // Set the flag
                 __loaded = true;
             }
@@ -157,7 +179,7 @@ namespace Tvg
         private Mesh CreateQuadMesh(float width, float height)
         {
             var mesh = new Mesh();
-            
+
             // Vertices (centered quad)
             float halfW = width * 0.5f;
             float halfH = height * 0.5f;
@@ -168,7 +190,7 @@ namespace Tvg
                 new Vector3(-halfW, halfH, 0),
                 new Vector3(halfW, halfH, 0)
             };
-            
+
             // UVs
             mesh.uv = new Vector2[]
             {
@@ -177,13 +199,13 @@ namespace Tvg
                 new Vector2(0, 1),
                 new Vector2(1, 1)
             };
-            
+
             // Triangles
             mesh.triangles = new int[] { 0, 2, 1, 2, 3, 1 };
-            
+
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
-            
+
             return mesh;
         }
 
@@ -196,7 +218,7 @@ namespace Tvg
                 // Create quad mesh sized to texture (in world units, 1 pixel = 0.01 units)
                 meshFilter.mesh = CreateQuadMesh(__texture.width * 0.01f, __texture.height * 0.01f);
             }
-            
+
             // Create material with unlit transparent shader
             __material = new Material(Shader.Find("Unlit/Transparent"));
             __material.mainTexture = __texture.Texture();
@@ -212,7 +234,7 @@ namespace Tvg
 
             // Update the frame
             __texture.frame += Time.deltaTime * __texture.fps * speed;
-            
+
             __texture.Texture();
         }
 

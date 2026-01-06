@@ -64,23 +64,23 @@ namespace Tvg.Editor
         {
             // Read the SVG file
             string svgText = File.ReadAllText(ctx.assetPath);
-            
+
             // Generate texture and sprite
             (Texture2D texture, Sprite sprite) = GenerateTextureAndSprite(svgText, ctx.assetPath);
-            
+
             // Add texture as sub-asset
             if (texture != null)
             {
                 ctx.AddObjectToAsset("texture", texture);
             }
-            
+
             // Add sprite as MAIN asset - this makes it behave like a PNG import
             if (sprite != null)
             {
                 ctx.AddObjectToAsset("sprite", sprite, texture);
                 ctx.SetMainObject(sprite);  // Sprite is the main asset!
             }
-            
+
             // Create SvgAsset to store raw SVG data (for TvgPlayer use)
             SvgAsset svgAsset = ScriptableObject.CreateInstance<SvgAsset>();
             svgAsset.SetData(svgText, texture, sprite);
@@ -90,7 +90,7 @@ namespace Tvg.Editor
         private (Texture2D, Sprite) GenerateTextureAndSprite(string svgData, string assetPath)
         {
             try
-            {   
+            {
                 // Load the SVG and render at its natural size
                 using (TvgTexture tvgTexture = new TvgTexture(svgData))
                 {
@@ -103,19 +103,19 @@ namespace Tvg.Editor
                         height = (int)(height * scale);
                         tvgTexture.Resize(width, height);
                     }
-                    
+
                     // Get the rendered texture
                     Texture2D sourceTexture = tvgTexture.Texture();
-                    
+
                     // Create a copy for the asset (can't use the original)
                     Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
                     texture.name = "texture";
                     texture.hideFlags = HideFlags.HideInHierarchy;
-                    
+
                     // Copy the pixel data
                     Graphics.CopyTexture(sourceTexture, texture);
                     texture.Apply(false, false);
-                    
+
                     // Create a sprite from the texture with user-defined settings
                     Sprite sprite = Sprite.Create(
                         texture,
@@ -127,26 +127,25 @@ namespace Tvg.Editor
                     );
                     sprite.name = System.IO.Path.GetFileNameWithoutExtension(assetPath);
                     sprite.hideFlags = HideFlags.None;  // Show in hierarchy so it can be selected
-                    
+
                     return (texture, sprite);
                 }
             }
             catch (System.Exception e)
             {
                 Debug.LogWarning($"Failed to generate SVG assets for {assetPath}: {e.Message}");
-                
+
                 // Return placeholder
                 Texture2D placeholder = new Texture2D(2, 2);
                 placeholder.hideFlags = HideFlags.HideInHierarchy;
                 placeholder.SetPixels(new Color[] { Color.gray, Color.gray, Color.gray, Color.gray });
                 placeholder.Apply();
-                
+
                 Sprite placeholderSprite = Sprite.Create(placeholder, new Rect(0, 0, 2, 2), new Vector2(0.5f, 0.5f));
                 placeholderSprite.hideFlags = HideFlags.HideInHierarchy;
-                
+
                 return (placeholder, placeholderSprite);
             }
         }
     }
 }
-

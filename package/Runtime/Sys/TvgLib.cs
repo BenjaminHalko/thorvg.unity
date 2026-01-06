@@ -1,4 +1,26 @@
-﻿using System;
+/*
+ * Copyright (c) 2025 - 2026 ThorVG project. All rights reserved.
+
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -18,7 +40,7 @@ namespace Tvg.Sys
         }
 
         private enum ColorSpace
-        {   
+        {
                 Abgr8888 = 0
         }
 
@@ -78,7 +100,7 @@ namespace Tvg.Sys
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_engine_init(int threads);
-        
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_engine_term();
 
@@ -88,7 +110,7 @@ namespace Tvg.Sys
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr tvg_swcanvas_create(EngineOption option);
-        
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_canvas_destroy(IntPtr handle);
 
@@ -116,13 +138,13 @@ namespace Tvg.Sys
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_animation_del(IntPtr handle);
-        
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_animation_set_frame(IntPtr handle, float frame);
-        
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_animation_get_total_frame(IntPtr handle, out float totalFrame);
-        
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_animation_get_duration(IntPtr handle, out float duration);
 
@@ -132,13 +154,13 @@ namespace Tvg.Sys
 /************************************************************************/
 /* Picture API                                                          */
 /************************************************************************/
-        
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_picture_load_data(IntPtr handle, string data, uint size, string mimetype, string rpath, bool copy);
-        
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_picture_set_size(IntPtr handle, float w, float h);
-        
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tvg_picture_get_size(IntPtr handle, out float w, out float h);
 
@@ -172,14 +194,14 @@ namespace Tvg.Sys
             Check(tvg_picture_load_data(picture, data, (uint)data.Length, "", "", true), "Picture Load");
             Check(tvg_canvas_push(canvas, picture), "Canvas Push");
 
-            return new AnimationHandle 
-            { 
+            return new AnimationHandle
+            {
                 Canvas = canvas,
                 Animation = animation,
                 Picture = picture
             };
         }
-        
+
         public static void DestroyAnimation(in AnimationHandle handle)
         {
             Check(tvg_animation_del(handle.Animation), "Animation Del");
@@ -245,34 +267,34 @@ namespace Tvg.Sys
 
         [DllImport(DLL_NAME)]
         private static extern int ThorVG_Init();
-        
+
         [DllImport(DLL_NAME)]
         private static extern void ThorVG_Term();
-        
+
         [DllImport(DLL_NAME)]
         private static extern int ThorVG_IsReady();
 
         [DllImport(DLL_NAME)]
         private static extern int ThorVG_CreateAnimation(string data);
-        
+
         [DllImport(DLL_NAME)]
         private static extern void ThorVG_DestroyAnimation(int id);
-        
+
         [DllImport(DLL_NAME)]
         private static extern int ThorVG_GetSize(int id, out float width, out float height);
-        
+
         [DllImport(DLL_NAME)]
         private static extern float ThorVG_GetDuration(int id);
-        
+
         [DllImport(DLL_NAME)]
         private static extern float ThorVG_GetTotalFrame(int id);
-        
+
         [DllImport(DLL_NAME)]
         private static extern int ThorVG_SetFrame(int id, float frame);
-        
+
         [DllImport(DLL_NAME)]
         private static extern int ThorVG_Resize(int id, int width, int height);
-        
+
         [DllImport(DLL_NAME)]
         private static extern int ThorVG_RenderToBuffer(int id, IntPtr bufferPtr, int bufferSize);
 

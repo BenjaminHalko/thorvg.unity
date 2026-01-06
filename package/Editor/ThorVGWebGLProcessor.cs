@@ -40,34 +40,34 @@ namespace Tvg.Editor
 
             // Source: Package StreamingAssets
             string packagePath = "Packages/com.thorvg.unity/StreamingAssets/WebGL";
-            
+
             // Destination: Project StreamingAssets (Unity copies this to build)
             string destPath = "Assets/StreamingAssets/Packages/com.thorvg.unity/WebGL";
-            
+
             if (!Directory.Exists(packagePath))
             {
                 UnityEngine.Debug.LogWarning("[ThorVG] WebGL WASM files not found. Run build script to generate them.");
                 return;
             }
-            
+
             // Create destination directory
             Directory.CreateDirectory(destPath);
-            
+
             // Copy files
             foreach (string file in Directory.GetFiles(packagePath))
             {
                 if (file.EndsWith(".meta")) continue;
-                
+
                 string fileName = Path.GetFileName(file);
                 string destFile = Path.Combine(destPath, fileName);
                 File.Copy(file, destFile, true);
                 UnityEngine.Debug.Log($"[ThorVG] Copied {fileName} for WebGL build");
             }
-            
+
             AssetDatabase.Refresh();
         }
     }
-    
+
     /// <summary>
     /// Cleanup after build
     /// </summary>
@@ -86,14 +86,14 @@ namespace Tvg.Editor
             {
                 Directory.Delete(tempPath, true);
                 File.Delete(tempPath + ".meta");
-                
+
                 // Remove parent if empty
                 if (Directory.GetFileSystemEntries("Assets/StreamingAssets").Length == 0)
                 {
                     Directory.Delete("Assets/StreamingAssets");
                     File.Delete("Assets/StreamingAssets.meta");
                 }
-                
+
                 AssetDatabase.Refresh();
             }
         }

@@ -36,7 +36,7 @@ namespace Tvg.Editor
         {
             // Register for hierarchy drag-and-drop
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
-            
+
             // Register for scene view drag-and-drop
             SceneView.duringSceneGui += OnSceneGUI;
         }
@@ -99,7 +99,7 @@ namespace Tvg.Editor
         {
             // Create a new GameObject
             GameObject go = new GameObject(asset.name);
-            
+
             // Place at scene view focus point or world origin
             go.transform.position = sceneView != null ? sceneView.pivot : Vector3.zero;
 
@@ -110,10 +110,10 @@ namespace Tvg.Editor
             TvgPlayer player = go.AddComponent<TvgPlayer>();
 
             // Use reflection to set the private source field
-            var sourceField = typeof(TvgPlayer).GetField("source", 
-                System.Reflection.BindingFlags.NonPublic | 
+            var sourceField = typeof(TvgPlayer).GetField("source",
+                System.Reflection.BindingFlags.NonPublic |
                 System.Reflection.BindingFlags.Instance);
-            
+
             if (sourceField != null)
             {
                 sourceField.SetValue(player, asset);
@@ -127,4 +127,3 @@ namespace Tvg.Editor
         }
     }
 }
-
