@@ -50,9 +50,9 @@ def check_dependencies(need_emsdk=False):
     # Check for meson
     try:
         subprocess.run(["meson", "--version"], capture_output=True, check=True)
-        print("✅ Meson found")
+        print("[OK] Meson found")
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("❌ Meson not found!")
+        print("[ERROR] Meson not found!")
         print("\nInstall Meson:")
         system = platform.system()
         if system == "Darwin":
@@ -70,9 +70,9 @@ def check_dependencies(need_emsdk=False):
     # Check for ninja (usually comes with meson)
     try:
         subprocess.run(["ninja", "--version"], capture_output=True, check=True)
-        print("✅ Ninja found")
+        print("[OK] Ninja found")
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("⚠️  Ninja not found (optional but recommended)")
+        print("[WARN] Ninja not found (optional but recommended)")
         print("  Install: brew install ninja")
 
     if not THORVG_DIR.exists():
@@ -88,7 +88,7 @@ def check_dependencies(need_emsdk=False):
             ]
         )
     else:
-        print("✅ ThorVG found")
+        print("[OK] ThorVG found")
 
     # Setup emsdk if needed for WASM builds
     if need_emsdk:
@@ -104,14 +104,14 @@ def check_dependencies(need_emsdk=False):
                 ]
             )
         else:
-            print("✅ emsdk found")
+            print("[OK] emsdk found")
 
         # Install and activate Emscripten 4.0.0
         emsdk_script = "emsdk.bat" if platform.system() == "Windows" else "./emsdk"
         print("Installing Emscripten 4.0.0...")
         run_command([emsdk_script, "install", "4.0.0"], cwd=emsdk_dir)
         run_command([emsdk_script, "activate", "4.0.0"], cwd=emsdk_dir)
-        print("✅ Emscripten 4.0.0 activated")
+        print("[OK] Emscripten 4.0.0 activated")
 
 
 def run_command(cmd, cwd=None):
@@ -154,7 +154,7 @@ def find_android_ndk():
         if location and location.exists():
             # Direct NDK path (Homebrew share)
             if (location / "toolchains").exists():
-                print(f"✅ Found Android NDK: {location}")
+                print(f"[OK] Found Android NDK: {location}")
                 return location
 
             # Versioned NDK path (Android Studio or Caskroom)
@@ -168,10 +168,10 @@ def find_android_ndk():
                     ndk_path = ndk_path / "AndroidNDK14206865.app/Contents/NDK"
 
                 if (ndk_path / "toolchains").exists():
-                    print(f"✅ Found Android NDK: {ndk_path}")
+                    print(f"[OK] Found Android NDK: {ndk_path}")
                     return ndk_path
 
-    print("❌ Android NDK not found!")
+    print("[ERROR] Android NDK not found!")
     print("\nInstall Android NDK:")
     print("  macOS:    brew install android-ndk")
     print("  Or set:   export ANDROID_NDK_HOME=/path/to/ndk")
@@ -238,7 +238,7 @@ endian = 'little'
     # Write to temp file
     cross_file = Path(f".android-{arch}.cross")
     cross_file.write_text(content)
-    print(f"✅ Generated cross-file: {cross_file}")
+    print(f"[OK] Generated cross-file: {cross_file}")
     return cross_file
 
 
@@ -277,9 +277,9 @@ def process_dylib(source):
             check=True,
             capture_output=True,
         )
-        print("✅ Code signed successfully")
+        print("[OK] Code signed successfully")
     except subprocess.CalledProcessError as e:
-        print(f"⚠️ Code signing failed: {e}")
+        print(f"[WARN] Code signing failed: {e}")
 
 
 def build_desktop():
@@ -321,7 +321,7 @@ def build_desktop():
 
     output_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, output_dir / output_file)
-    print(f"✅ Desktop build copied to {output_dir / output_file}")
+    print(f"[OK] Desktop build copied to {output_dir / output_file}")
 
 
 def build_ios():
@@ -329,7 +329,7 @@ def build_ios():
     print("\n=== Building for iOS ===")
 
     if platform.system() != "Darwin":
-        print("⚠️  iOS builds require macOS")
+        print("[WARN]  iOS builds require macOS")
         return
 
     build_dir = Path("build/ios")
@@ -359,7 +359,7 @@ def build_ios():
 
     source = build_dir / "src" / "libthorvg.a"
     shutil.copy2(source, output_dir / "libthorvg.a")
-    print(f"✅ iOS build copied to {output_dir / 'libthorvg.a'}")
+    print(f"[OK] iOS build copied to {output_dir / 'libthorvg.a'}")
 
 
 def build_android():
@@ -380,7 +380,7 @@ def build_android():
         try:
             cross_file = create_android_cross_file(arch, ndk_path)
         except ValueError as e:
-            print(f"⚠️  {e}, skipping {arch}")
+            print(f"[WARN]  {e}, skipping {arch}")
             continue
 
         build_dir = Path(f"build/android-{arch}")
@@ -408,13 +408,13 @@ def build_android():
 
             source = build_dir / "src" / "libthorvg.so"
             shutil.copy2(source, output_dir / "libthorvg.so")
-            print(f"✅ {arch} build copied to {output_dir / 'libthorvg.so'}")
+            print(f"[OK] {arch} build copied to {output_dir / 'libthorvg.so'}")
         finally:
             # Clean up generated cross-file
             if cross_file.exists():
                 cross_file.unlink()
 
-    print("\n✅ All Android architectures built")
+    print("\n[OK] All Android architectures built")
 
 
 def setup_emsdk():
@@ -432,7 +432,7 @@ def setup_emsdk():
             ]
         )
     else:
-        print("✅ emsdk already exists")
+        print("[OK] emsdk already exists")
 
     return emsdk_dir
 
@@ -451,7 +451,7 @@ def create_wasm_cross_file(emsdk_dir):
     # Write to temp file
     cross_file = Path(".wasm32_sw.cross")
     cross_file.write_text(content)
-    print("✅ Generated WASM cross-file")
+    print("[OK] Generated WASM cross-file")
     return cross_file
 
 
@@ -494,7 +494,7 @@ def build_wasm():
         wasm_output = build_dir / "src" / "bindings" / "wasm"
         shutil.copy2(wasm_output / "thorvg.js", output_dir / "thorvg.js")
         shutil.copy2(wasm_output / "thorvg.wasm", output_dir / "thorvg.wasm")
-        print(f"✅ WebGL module copied to {output_dir}")
+        print(f"[OK] WebGL module copied to {output_dir}")
     finally:
         # Clean up
         if cross_file.exists():
@@ -559,7 +559,7 @@ Examples:
         elif target == "wasm":
             build_wasm()
 
-    print("\n✅ Build complete!")
+    print("\n[OK] Build complete!")
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: brew install meson ninja
+        run: brew install meson
 
       - name: Build macOS
         working-directory: scripts
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: pip3 install meson ninja
+        run: pip3 install meson
 
       - name: Build Windows
         working-directory: scripts
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: pip3 install meson ninja
+        run: pip3 install meson
 
       - name: Build Linux
         working-directory: scripts
