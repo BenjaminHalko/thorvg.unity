@@ -351,7 +351,12 @@ def build_android():
 
 def create_wasm_cross_file():
     """Create WASM cross-file by replacing EMSDK: placeholder in ThorVG's template"""
-    emsdk_root = Path(os.environ.get("EMSDK", ""))
+    emsdk_root_env = os.environ.get("EMSDK")
+    if not emsdk_root_env:
+        print("[ERROR] EMSDK not found! Set the EMSDK variable")
+        return None
+
+    emsdk_root = Path(emsdk_root_env)
     if not emsdk_root.exists():
         print("[ERROR] EMSDK not found! Set the EMSDK variable")
         return None
