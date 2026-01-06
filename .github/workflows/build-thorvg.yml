@@ -162,7 +162,7 @@ jobs:
           cp artifacts/windows-binary/libthorvg.dll package/Plugins/x86_64/
           cp artifacts/linux-binary/libthorvg.so package/Plugins/x86_64/
           cp -r artifacts/android-binary/* package/Plugins/Android/
-          cp artifacts/wasm-binary/*.js artifacts/wasm-binary/*.wasm package/StreamingAssets/WebGL/
+          cp artifacts/wasm-binary/thorvg.js artifacts/wasm-binary/thorvg.wasm package/StreamingAssets/WebGL/
 
       - name: Create branch and commit
         run: |
